@@ -1,0 +1,96 @@
+package org.example.hrmuserkeycloak.controller;
+
+import lombok.RequiredArgsConstructor;
+import org.example.hrmuserkeycloak.dto.GroupDto;
+import org.example.hrmuserkeycloak.dto.RoleDto;
+import org.example.hrmuserkeycloak.dto.RolesDto;
+import org.example.hrmuserkeycloak.dto.UserDto;
+import org.example.hrmuserkeycloak.dto.UserPasswordDto;
+import org.example.hrmuserkeycloak.service.UserService;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/users")
+public class UserController {
+
+    private final UserService userService;
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<UserDto> getUsers() {
+        return userService.getUsers();
+    }
+
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public UserDto getUserById(@PathVariable String id) {
+        return userService.getUserById(id);
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserDto createUser(@RequestBody UserDto userDto) {
+        return userService.createUser(userDto);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUser(@PathVariable String id) {
+        userService.deleteUser(id);
+    }
+
+    @PutMapping("/{id}/set-password")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void setPassword(@PathVariable String id, @RequestBody UserPasswordDto userPasswordDto) {
+        userService.setPassword(id, userPasswordDto);
+    }
+
+    @GetMapping("/{id}/roles")
+    @ResponseStatus(HttpStatus.OK)
+    public RolesDto getRoles(@PathVariable String id) {
+        return userService.getRoles(id);
+    }
+
+    @PostMapping("/{id}/roles/assign")
+    @ResponseStatus(HttpStatus.OK)
+    public void assignRoles(@PathVariable String id, @RequestBody List<RoleDto> roleDtoList) {
+        userService.assignRoles(id, roleDtoList);
+    }
+
+    @DeleteMapping("/{id}/roles/unassign")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void unassignRoles(@PathVariable String id, @RequestBody List<RoleDto> roleDtoList) {
+        userService.unassignRoles(id, roleDtoList);
+    }
+
+    @GetMapping("/{userId}/roles/clients/{clientId}/available")
+    @ResponseStatus(HttpStatus.OK)
+    public List<GroupDto> getAvailableClientRoles(@PathVariable String userId, @PathVariable String clientId) {
+        return userService.getAvailableClientRoles(userId, clientId);
+    }
+
+    @PutMapping("/{userId}/groups/{groupId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void assignGroup(@PathVariable String userId, @PathVariable String groupId) {
+        userService.assignGroup(userId, groupId);
+    }
+
+    @DeleteMapping("/{userId}/groups/{groupId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void unassignGroup(@PathVariable String userId, @PathVariable String groupId) {
+        userService.unassignGroup(userId, groupId);
+    }
+
+}
